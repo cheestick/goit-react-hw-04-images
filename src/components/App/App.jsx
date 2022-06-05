@@ -3,6 +3,6 @@ import s from './App.module.css';
 
 export default class App extends Component {
   render() {
-    return <div className={s.wrapper}>React homework template</div>;
+    return <div className={s.App}>React homework template</div>;
   }
 }
