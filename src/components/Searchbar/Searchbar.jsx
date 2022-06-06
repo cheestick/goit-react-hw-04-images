@@ -2,14 +2,19 @@ import React, { Component } from 'react';
 import s from './Searchbar.module.css';
 
 export default class Searchbar extends Component {
+  state = {
+    query: '',
+  };
+
   onSubmit = e => {
     e.preventDefault();
-    if (this.props.query.length < 1) return;
-    console.log(this.props.query);
+    const { query } = this.state;
+    if (query.length < 1) return;
+    this.props.onSearchImage(query);
   };
 
   onChange = e => {
-    this.props.updateQuery(e.target.value);
+    this.setState({ query: e.target.value });
   };
 
   render() {
@@ -23,7 +28,7 @@ export default class Searchbar extends Component {
           <input
             className={s.input}
             type="text"
-            value={this.props.query}
+            value={this.state.query}
             onChange={this.onChange}
             placeholder="Search images and photos"
             autoComplete="off"

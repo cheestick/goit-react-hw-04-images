@@ -8,14 +8,17 @@ import s from './App.module.css';
 
 export default class App extends Component {
   state = {
-    query: '',
     result: [],
     showModal: false,
     isLoading: false,
   };
 
-  updateQuery = newQuery => {
-    this.setState({ query: newQuery });
+  componentDidUpdate() {
+    console.log('App updated');
+  }
+
+  onSearchImage = query => {
+    console.log('App onSearchImage ', query);
   };
 
   toggleModal = () => {
@@ -23,10 +26,10 @@ export default class App extends Component {
   };
 
   render() {
-    const { query, result, showModal, isLoading } = this.state;
+    const { result, showModal, isLoading } = this.state;
     return (
       <div className={s.App}>
-        <Searchbar query={query} updateQuery={this.updateQuery} />
+        <Searchbar onSearchImage={this.onSearchImage} />
         <ImageGallery result={result} showModal={this.toggleModal} />
         {result.length > 0 && <Button label="Load More" />}
         {isLoading && <Loader />}
