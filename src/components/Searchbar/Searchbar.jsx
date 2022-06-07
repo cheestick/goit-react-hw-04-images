@@ -8,9 +8,9 @@ export default class Searchbar extends Component {
 
   onSubmit = e => {
     e.preventDefault();
-    const { query } = this.state;
+    const query = this.state.query.trim();
     if (query.length < 1) return;
-    this.props.onSearchImage(query);
+    this.props.onSubmit(query);
   };
 
   onChange = e => {

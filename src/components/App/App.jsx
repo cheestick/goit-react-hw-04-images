@@ -1,24 +1,19 @@
 import React, { Component } from 'react';
 import Searchbar from 'components/Searchbar';
 import ImageGallery from 'components/ImageGallery';
-import Button from 'components/Button';
-import Loader from 'components/Loader';
-import Modal from 'components/Modal';
+// import Button from 'components/Button';
+// import Loader from 'components/Loader';
+// import Modal from 'components/Modal';
 import s from './App.module.css';
 
 export default class App extends Component {
   state = {
-    result: [],
+    query: '',
     showModal: false,
-    isLoading: false,
   };
 
-  componentDidUpdate() {
-    console.log('App updated');
-  }
-
-  onSearchImage = query => {
-    console.log('App onSearchImage ', query);
+  onSubmit = query => {
+    this.setState({ query });
   };
 
   toggleModal = () => {
@@ -26,14 +21,18 @@ export default class App extends Component {
   };
 
   render() {
-    const { result, showModal, isLoading } = this.state;
+    const { query } = this.state;
     return (
       <div className={s.App}>
-        <Searchbar onSearchImage={this.onSearchImage} />
-        <ImageGallery result={result} showModal={this.toggleModal} />
-        {result.length > 0 && <Button label="Load More" />}
-        {isLoading && <Loader />}
-        {showModal && <Modal onClose={this.toggleModal} />}
+        <Searchbar onSubmit={this.onSubmit} />
+        <ImageGallery query={query} showModal={this.toggleModal} />
+        {/* {!this.lastPage && result.length > 0 && (
+          <Button
+            onClick={() => this.onSearchImage(this.state.currentQuery)}
+            label="Load More"
+          />
+        )}
+        {showModal && <Modal onClose={this.toggleModal} />} */}
       </div>
     );
   }
