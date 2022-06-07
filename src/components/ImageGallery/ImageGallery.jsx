@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ImageGalleryItem from 'components/ImageGalleryItem';
-// import Button from 'components/Button';
+import Button from 'components/Button';
 import Loader from 'components/Loader';
 import s from './ImageGallery.module.css';
 import * as api from 'services/search-api';
@@ -24,7 +24,27 @@ class ImageGallery extends Component {
       result: searchResult.hits,
       status: 'resolve',
     });
+    this.page = 2;
   }
+
+  loadMore = async () => {
+    const { query } = this.props;
+    // this.setState({ status: 'loading' });
+    const moreResult = await api.fetchImages(query, this.page);
+    this.page += 1;
+    this.setState(
+      prevState => ({
+        result: [...prevState.result, ...moreResult.hits],
+        // status: 'resolve',
+      }),
+      () => {
+        window.scrollBy({
+          top: document.documentElement.clientHeight * this.page,
+          behavior: 'smooth',
+        });
+      }
+    );
+  };
 
   render() {
     const { result, status } = this.state;
@@ -36,15 +56,18 @@ class ImageGallery extends Component {
 
     if (status === 'resolve')
       return (
-        <ul className={s.gallery}>
-          {result.map(galleryItemData => (
-            <ImageGalleryItem
-              key={galleryItemData.id}
-              data={galleryItemData}
-              showModal={showModal}
-            />
-          ))}
-        </ul>
+        <>
+          <ul className={s.gallery}>
+            {result.map(galleryItemData => (
+              <ImageGalleryItem
+                key={galleryItemData.id}
+                data={galleryItemData}
+                showModal={showModal}
+              />
+            ))}
+          </ul>
+          <Button label="Load More" onClick={this.loadMore} />
+        </>
       );
   }
 }
