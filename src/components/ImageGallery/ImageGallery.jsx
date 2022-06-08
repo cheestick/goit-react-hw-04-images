@@ -7,52 +7,30 @@ import * as api from 'services/search-api';
 import { smoothScroll } from 'Utils';
 
 class ImageGallery extends Component {
-  constructor() {
-    super();
-    this.state = {
-      result: [],
-      status: null,
-      lastPage: false,
-    };
-
-    // this.page = null;
-  }
+  state = {
+    result: [],
+    status: null,
+    lastPage: false,
+  };
 
   async componentDidUpdate(prevProps, prevState) {
-    // console.count('Did Update: ');
     const prevQuery = prevProps.query;
     const nextQuery = this.props.query;
     const { status, lastPage } = this.state;
 
-    if (prevQuery !== nextQuery) {
-      this.setState({ status: 'new' });
-      console.log('new');
-    }
+    prevQuery !== nextQuery && this.setNewQueryStatus();
 
     if (status === 'new') {
-      console.log('First');
-      this.setState({
-        status: 'loading',
-      });
-      const moreResult = await api.fetchMoreImages(nextQuery);
-      this.setState(
-        {
-          result: [...moreResult.result],
-          status: 'more',
-          lastPage: moreResult.lastPage,
-        },
-        smoothScroll
-      );
-      return;
+      this.loadMore();
+      this.updateGalleryState(nextQuery);
     }
 
     if (prevState.status === 'more' && status === 'loading' && !lastPage) {
-      console.log('Load More');
-      this.updateGallery(nextQuery);
+      this.updateGalleryState(nextQuery);
     }
   }
 
-  updateGallery = async query => {
+  updateGalleryState = async query => {
     const moreResult = await api.fetchMoreImages(query);
     this.setState(
       prevState => ({
@@ -66,6 +44,13 @@ class ImageGallery extends Component {
 
   loadMore = () => {
     this.setState({ status: 'loading' });
+  };
+
+  setNewQueryStatus = () => {
+    this.setState({
+      status: 'new',
+      result: [],
+    });
   };
 
   render() {
