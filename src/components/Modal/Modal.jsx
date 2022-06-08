@@ -12,16 +12,14 @@ export default class Modal extends Component {
   }
 
   onClose = e => {
-    e.code === 'Escape' && this.props.onClose();
-    e.currentTarget === e.target && this.props.onClose();
+    (e.code === 'Escape' || e.currentTarget === e.target) &&
+      this.props.onClose();
   };
 
   render() {
     return createPortal(
       <div className={s.overlay} onClick={this.onClose}>
-        <div className={s.modal}>
-          <img src="" alt="" />
-        </div>
+        <div className={s.modal}>{this.props.children}</div>
       </div>,
       document.querySelector('#modal')
     );

@@ -54,13 +54,21 @@ class ImageGallery extends Component {
     });
   };
 
+  onClick = e => {
+    const { nodeName, dataset, alt } = e.target;
+    if (nodeName === 'IMG') {
+      const largeImage = <img src={dataset.largeImageUrl} alt={alt} />;
+      this.props.onClick(largeImage);
+    }
+  };
+
   render() {
     const { result, status, lastPage } = this.state;
     const { showModal } = this.props;
 
     return (
       <>
-        <ul className={s.gallery}>
+        <ul className={s.gallery} onClick={this.onClick}>
           {result.map(galleryItemData => (
             <ImageGalleryItem
               key={galleryItemData.id}
