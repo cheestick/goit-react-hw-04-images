@@ -11,7 +11,7 @@ const initialQueryParams = {
   orientation: ORIENTATION,
 };
 
-export const fetchImages = async (query = '', page = 1) => {
+const fetchImages = async (query = '', page = 1) => {
   const searchParams = new URLSearchParams({
     ...initialQueryParams,
     q: query,
@@ -27,37 +27,38 @@ export const fetchImages = async (query = '', page = 1) => {
 
 const currentQuery = {
   query: '',
+  result: null,
   page: 0,
   totalPages: null,
-  lastFetch: false,
+  lastPage: false,
 };
 
 export const fetchMoreImages = async query => {
-  !isNewQuery(query) && !isLastPage() && increasePageNumber();
   isNewQuery(query) && initWithNewQuery(query);
-  isLastPage() && setLastFetch();
-  if (isLastFetch()) return [];
+  increasePageNumber();
 
   const data = await fetchImages(query, currentQuery.page);
-  nullishTotalPages() && setTotalPageCount(data.totalHits);
-
-  return data;
+  isNewQuery() && setTotalPageCount(data.totalHits);
+  isLastPage();
+  return { ...currentQuery, result: data.hits };
 };
+
+export const getCurrentPage = () => currentQuery.page;
 
 const initWithNewQuery = query => {
   currentQuery.query = query;
-  currentQuery.page = 1;
+  currentQuery.page = 0;
   currentQuery.totalPages = null;
-  currentQuery.lastFetch = false;
+  currentQuery.lastPage = false;
 };
 
-const increasePageNumber = () => (currentQuery.page += 1);
+const increasePageNumber = () => {
+  currentQuery.page += 1;
+};
 const setTotalPageCount = totalHits => {
   currentQuery.totalPages = Math.ceil(totalHits / PER_PAGE);
 };
 
-const setLastFetch = () => (currentQuery.lastFetch = true);
-const nullishTotalPages = () => currentQuery.totalPages === null;
-const isLastFetch = () => currentQuery.lastFetch;
 const isNewQuery = newQuery => currentQuery.query !== newQuery;
-const isLastPage = () => (currentQuery.totalPages ?? 0) >= currentQuery.page;
+const isLastPage = () =>
+  (currentQuery.lastPage = currentQuery.page >= currentQuery.totalPages);

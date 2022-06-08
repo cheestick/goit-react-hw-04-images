@@ -3,7 +3,7 @@ import s from './ImageGalleryItem.module.css';
 
 const ImageGalleryItem = props => {
   const { id, webformatURL, largeImageURL } = props.data;
-  console.log(id);
+  // console.log(id);
   return (
     <li className={s.item} onClick={props.showModal}>
       <img

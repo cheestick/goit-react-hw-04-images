@@ -11,6 +11,7 @@ export default class App extends Component {
   };
 
   onSubmit = query => {
+    if (this.state.query === query) return;
     this.setState({ query });
   };
 
@@ -24,13 +25,6 @@ export default class App extends Component {
       <div className={s.App}>
         <Searchbar onSubmit={this.onSubmit} />
         <ImageGallery query={query} showModal={this.toggleModal} />
-        {/* {!this.lastPage && result.length > 0 && (
-          <Button
-            onClick={() => this.onSearchImage(this.state.currentQuery)}
-            label="Load More"
-          />
-        )}
-        {showModal && <Modal onClose={this.toggleModal} />} */}
       </div>
     );
   }
