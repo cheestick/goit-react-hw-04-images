@@ -50,6 +50,7 @@ class ImageGallery extends Component {
     this.setState({
       status: 'new',
       result: [],
+      lastPage: false,
     });
   };
 
