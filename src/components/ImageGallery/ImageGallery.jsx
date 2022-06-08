@@ -21,7 +21,7 @@ class ImageGallery extends Component {
     prevQuery !== nextQuery && this.setNewQueryStatus();
 
     if (status === 'new') {
-      this.loadMore();
+      this.loading();
       this.updateGalleryState(nextQuery);
     }
 
@@ -42,7 +42,7 @@ class ImageGallery extends Component {
     );
   };
 
-  loadMore = () => {
+  loading = () => {
     this.setState({ status: 'loading' });
   };
 
@@ -70,7 +70,7 @@ class ImageGallery extends Component {
         </ul>
         {status === 'loading' && <Loader />}
         {!lastPage && status === 'more' && (
-          <Button label="Load More" onClick={this.loadMore} />
+          <Button label="Load More" onClick={this.loading} />
         )}
       </>
     );
