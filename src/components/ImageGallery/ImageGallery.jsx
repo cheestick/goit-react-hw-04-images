@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import ImageGalleryItem from 'components/ImageGalleryItem';
 import Button from 'components/Button';
 import Loader from 'components/Loader';
@@ -6,7 +7,7 @@ import s from './ImageGallery.module.css';
 import * as api from 'services/search-api';
 import { smoothScroll } from 'Utils';
 
-class ImageGallery extends Component {
+export default class ImageGallery extends Component {
   state = {
     result: [],
     status: null,
@@ -64,17 +65,12 @@ class ImageGallery extends Component {
 
   render() {
     const { result, status, lastPage } = this.state;
-    const { showModal } = this.props;
 
     return (
       <>
         <ul className={s.gallery} onClick={this.onClick}>
           {result.map(galleryItemData => (
-            <ImageGalleryItem
-              key={galleryItemData.id}
-              data={galleryItemData}
-              showModal={showModal}
-            />
+            <ImageGalleryItem key={galleryItemData.id} data={galleryItemData} />
           ))}
         </ul>
         {status === 'loading' && <Loader />}
@@ -86,4 +82,7 @@ class ImageGallery extends Component {
   }
 }
 
-export default ImageGallery;
+ImageGallery.propTypes = {
+  query: PropTypes.string.isRequired,
+  onClick: PropTypes.func.isRequired,
+};
