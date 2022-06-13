@@ -1,1 +1,1 @@
-React component lifecycle
+React component lifecycle. Hooked
