@@ -41,7 +41,6 @@ export default function ImageGallery({ query, onClick }) {
   async function updateGalleryState(query) {
     setStatus(STATUS.LOADING);
     const moreResult = await api.fetchMoreImages(query);
-    console.log(moreResult);
     result.current = [...result.current, ...moreResult.result];
     lastPage.current = moreResult.lastPage;
     setStatus(STATUS.MORE);
