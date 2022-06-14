@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import ImageGalleryItem from 'components/ImageGalleryItem';
 import Button from 'components/Button';
@@ -11,76 +11,40 @@ const STATUS = {
   NEW: 'new',
   LOADING: 'loading',
   MORE: 'more',
+  IDLE: 'idle',
 };
 
 export default function ImageGallery({ query, onClick }) {
-  const [result, setResult] = useState([]);
-  const [status, setStatus] = useState(null);
-  const [lastPage, setLastPage] = useState(false);
-  const prevQuery = useRef('');
-  const prevStatus = useRef('');
+  const [status, setStatus] = useState(STATUS.IDLE);
+  const result = useRef([]);
+  const lastPage = useRef(false);
+  const prevQuery = useRef(null);
 
-  // async componentDidUpdate(prevProps, prevState) {
-  //   const prevQuery = prevProps.query;
-  //   const nextQuery = this.props.query;
-  //   const { status, lastPage } = this.state;
-
-  //   prevQuery !== nextQuery && this.setNewQueryStatus();
-
-  //   if (status === 'new') {
-  //     this.loading();
-  //     this.updateGalleryState(nextQuery);
-  //   }
-
-  //   if (prevState.status === 'more' && status === 'loading' && !lastPage) {
-  //     this.updateGalleryState(nextQuery);
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   setNewQueryStatus();
-  // }, [query]);
+  const setNewQueryStatus = useCallback(() => {
+    prevQuery.current = query;
+    result.current = [];
+    lastPage.current = false;
+    setStatus(STATUS.NEW);
+  }, [query]);
 
   useEffect(() => {
+    if (!query) return;
     if (prevQuery.current !== query) {
       prevQuery.current = query;
-      prevStatus.current = status;
       setNewQueryStatus();
     }
-  }, [query, status]);
 
-  useEffect(() => {
-    if (status === STATUS.NEW) {
-      prevStatus.current = status;
-      setStatus(STATUS.LOADING);
-      updateGalleryState(query);
-    }
-  }, [query, status]);
-
-  useEffect(() => {
-    if (
-      (!lastPage &&
-        status === STATUS.LOADING &&
-        prevStatus.current === STATUS.LOADING) ||
-      prevStatus.current === STATUS.NEW
-    ) {
-      prevStatus.current = status;
-      updateGalleryState(query);
-    }
-  }, [status, lastPage, query]);
+    if (status === STATUS.NEW) updateGalleryState(query);
+    smoothScroll();
+  }, [query, status, setNewQueryStatus]);
 
   async function updateGalleryState(query) {
+    setStatus(STATUS.LOADING);
     const moreResult = await api.fetchMoreImages(query);
-    setResult(prevResult => [...prevResult, ...moreResult.result]);
-    setLastPage(moreResult.lastPage);
+    console.log(moreResult);
+    result.current = [...result.current, ...moreResult.result];
+    lastPage.current = moreResult.lastPage;
     setStatus(STATUS.MORE);
-    smoothScroll();
-  }
-
-  function setNewQueryStatus() {
-    setStatus(STATUS.NEW);
-    setResult([]);
-    setLastPage(false);
   }
 
   const onImageClick = e => {
@@ -94,13 +58,13 @@ export default function ImageGallery({ query, onClick }) {
   return (
     <>
       <ul className={s.gallery} onClick={onImageClick}>
-        {result.map(galleryItemData => (
+        {result.current.map(galleryItemData => (
           <ImageGalleryItem key={galleryItemData.id} data={galleryItemData} />
         ))}
       </ul>
       {status === STATUS.LOADING && <Loader />}
-      {!lastPage && status === STATUS.MORE && (
-        <Button label="Load More" onClick={() => setStatus(STATUS.LOADING)} />
+      {!lastPage.current && status === STATUS.MORE && (
+        <Button label="Load More" onClick={() => updateGalleryState(query)} />
       )}
     </>
   );
